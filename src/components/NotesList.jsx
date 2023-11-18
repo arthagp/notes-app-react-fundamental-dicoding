@@ -1,10 +1,10 @@
 import React from 'react'
 import NotesItem from './NotesItem'
+import PropTypes from 'prop-types'
 
-//TODO : NotesList akan di lempar ke NotesApp, dan akan menerima getAllNotes()
 
-const NotesList = ({ notes, onDelete, onArchive }) => {
-  console.log(notes)
+const NotesList = ({ notes, onDelete, onArchive, txtArchive }) => {
+  // console.log(notes)
 
   return (
     <section className='notes-list'>
@@ -18,13 +18,19 @@ const NotesList = ({ notes, onDelete, onArchive }) => {
             body={note.body}
             onDelete={onDelete}
             onArchive={onArchive}
-          // {...note}
+            txtArchive={txtArchive}
           />
         )
         )
       }
     </section>
   )
+}
+
+NotesList.propTypes = {
+  notes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onArchive: PropTypes.func.isRequired,
 }
 
 export default NotesList

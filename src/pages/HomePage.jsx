@@ -1,5 +1,5 @@
 import React from 'react'
-import { getAllNotes, deleteNote, archiveNote } from '../utils/local-data'
+import { getActiveNotes, deleteNote, archiveNote } from '../utils/local-data'
 import NotesList from '../components/NotesList'
 import EmptyMessage from '../components/EmptyMessage'
 
@@ -8,7 +8,7 @@ class HomePage extends React.Component {
     super(props)
 
     this.state = {
-      notes: getAllNotes()
+      notes: getActiveNotes()
     }
 
     this.onDeleteHandler = this.onDeleteHandler.bind(this);
@@ -20,7 +20,7 @@ class HomePage extends React.Component {
 
     this.setState(() => {
       return {
-        notes: getAllNotes()
+        notes: getActiveNotes()
       }
     })
   }
@@ -30,19 +30,20 @@ class HomePage extends React.Component {
 
     this.setState(() => {
       return {
-        notes: getAllNotes()
+        notes: getActiveNotes()
       }
     })
   }
 
 
   render() {
+
     return (
       <>
         <h2>Daftar Catatan Aktif</h2>
         {
-          this.state.notes.length === 0 ? (<EmptyMessage />) :
-            (<NotesList notes={this.state.notes} onDelete={this.onDeleteHandler} onArchive={this.onArchiveHandler} />)
+          this.state.notes.length === 0 ? (<EmptyMessage txtArsip={'Tidak Ada Catatan'} />) :
+            (<NotesList notes={this.state.notes} onDelete={this.onDeleteHandler} onArchive={this.onArchiveHandler} txtArchive={'Archive'} />)
         }
       </>
     )

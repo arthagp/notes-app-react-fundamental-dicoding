@@ -1,9 +1,9 @@
 import React from "react";
 
-function EmptyMessage (){
+function EmptyMessage({ txtArsip }) {
     return (
-        <div className="notes-list__empty-message">
-            <h2>Tidak Ada Catatan</h2>
+        <div className="notes-list-empty">
+            <p>{txtArsip}</p>
         </div>
     )
 }

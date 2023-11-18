@@ -1,8 +1,8 @@
 import React from 'react'
 import { showFormattedDate } from '../utils/index'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
-//TODO : memasukan title, date, desc
 
 const NotesItemBody = ({ id, title, body, createdAt }) => {
     const newDate = showFormattedDate(createdAt)
@@ -16,6 +16,12 @@ const NotesItemBody = ({ id, title, body, createdAt }) => {
             <p className='note-item__body'>{body}</p>
         </>
     )
+}
+
+NotesItemBody.propTypes = {
+    title: PropTypes.string.isRequired,
+    createdAt: PropTypes.string.isRequired,
+    body: PropTypes.string.isRequired,
 }
 
 export default NotesItemBody

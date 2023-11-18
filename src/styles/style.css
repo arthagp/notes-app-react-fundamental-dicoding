@@ -110,9 +110,8 @@ main {
 /* Button */
 
 .archive-btn {
+  padding: 8px;
   cursor: pointer;
-  width: 5em;
-  height: 2em;
   margin: 10px;
   color: black;
   background-color: rgb(243, 243, 82);
@@ -121,9 +120,8 @@ main {
 }
 
 .delete-btn {
+  padding: 8px;
   cursor: pointer;
-  width: 5em;
-  height: 2em;
   margin: 10px;
   color: black;
   background-color: rgb(237, 103, 103);
