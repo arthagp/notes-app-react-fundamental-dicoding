@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 
 
 const NotesItem = ({ id, title, createdAt, body, onArchive, onDelete, txtArchive }) => {
-    // console.log(id)
     return (
         <article className='note-item'>
             <NotesItemBody id={id} title={title} createdAt={createdAt} body={body} />

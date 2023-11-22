@@ -4,8 +4,6 @@ import PropTypes from 'prop-types'
 
 
 const NotesList = ({ notes, onDelete, onArchive, txtArchive }) => {
-  // console.log(notes)
-
   return (
     <section className='notes-list'>
       {

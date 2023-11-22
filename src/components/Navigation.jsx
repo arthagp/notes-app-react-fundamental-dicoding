@@ -4,6 +4,7 @@ import { FiHome, FiPlusCircle, FiLogOut } from 'react-icons/fi';
 import { FaArchive, FaMoon, FaSun } from "react-icons/fa";
 import ThemeContext from '../contexts/ThemeContext';
 import LocaleContext from '../contexts/LocaleContext';
+import PropTypes from 'prop-types'
 
 const Navigation = ({ logout, name }) => {
     const { theme, toggleTheme } = React.useContext(ThemeContext);
@@ -23,6 +24,11 @@ const Navigation = ({ logout, name }) => {
             </ul>
         </nav>
     )
+}
+
+Navigation.propTypes = {
+    logout: PropTypes.func.isRequired,
+    name: PropTypes.string.isRequired
 }
 
 export default Navigation

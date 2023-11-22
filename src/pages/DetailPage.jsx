@@ -13,18 +13,19 @@ class DetailPage extends React.Component {
     super(props);
 
     this.state = {
-      note: null // ngambil id melalui props
+      note: null
     };
   }
 
   async componentDidMount() {
-    const { data } = await getNote(this.props.id)
-
-    this.setState(() => {
-      this.setState(() => {
-        return { note: data }
-      })
-    })
+    try {
+      const { data } = await getNote(this.props.id);
+      this.setState({
+        note: data
+      });
+    } catch (error) {
+      console.error('Error fetching note:', error);
+    }
   }
 
   render() {

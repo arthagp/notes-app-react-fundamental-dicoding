@@ -25,7 +25,7 @@ const HomePage = () => {
       } finally {
         setTimeout(() => {
           setLoading(false);
-        }, 3000);
+        }, 1000); // agar kelihatan loading nya 
       }
     };
 
