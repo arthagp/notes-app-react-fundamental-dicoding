@@ -10,7 +10,8 @@ const ArchiveButton = ({ id, onArchive, txtArchive }) => {
 
 ArchiveButton.propTypes = {
   id: PropTypes.string.isRequired,
-  onArchive: PropTypes.func.isRequired
+  onArchive: PropTypes.func.isRequired,
+  txtArchive: PropTypes.string.isRequired
 }
 
 export default ArchiveButton

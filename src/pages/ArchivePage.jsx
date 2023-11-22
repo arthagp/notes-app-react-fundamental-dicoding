@@ -1,85 +1,69 @@
-import React from 'react'
-import { getArchivedNotes, unarchiveNote, deleteNote } from '../utils/local-data'
-import EmptyMessage from '../components/EmptyMessage'
-import NotesList from '../components/NotesList'
-import SearchBar from '../components/SearchBar'
+import React, { useState, useEffect, useContext } from 'react';
+import { getArchivedNotes, unarchiveNote, deleteNote, archiveNote } from '../utils/network-data';
+import EmptyMessage from '../components/EmptyMessage';
+import NotesList from '../components/NotesList';
+import SearchBar from '../components/SearchBar';
 import { useSearchParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import LocaleContext from '../contexts/LocaleContext';
 
-
-function ArchivePageWrapper() {
+const ArchivePage = () => {
+  const [notes, setNotes] = useState([]);
+  const [keyword, setKeyword] = useState('');
+  const { locale } = useContext(LocaleContext);
   const [searchParams, setSearchParams] = useSearchParams();
-  const keyword = searchParams.get('keyword');
-  function changeSearchParams(keyword) {
-    setSearchParams({ keyword });
-  }
+  const urlKeyword = searchParams.get('keyword');
 
-  // defaultKeyWord ini berasal dari keyword: props.defaultKeyWord
-  return <ArchivePage defaultKeyword={keyword} keywordChange={changeSearchParams} />
-}
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await getArchivedNotes();
+      setNotes(data);
+    };
 
-class ArchivePage extends React.Component {
-  constructor(props) {
-    super(props)
+    fetchData();
+  }, []);
 
-    this.state = {
-      notes: getArchivedNotes(),
-      keyword: props.defaultKeyword || '',
-    }
+  useEffect(() => {
+    setKeyword(urlKeyword || '');
+  }, [urlKeyword]);
 
-    this.onDeleteHandler = this.onDeleteHandler.bind(this);
-    this.onUnArchiveHandler = this.onUnArchiveHandler.bind(this);
-    this.onKeywordChangeHandler = this.onKeywordChangeHandler.bind(this);
-  }
+  const onDeleteHandler = async (id) => {
+    await deleteNote(id);
 
-  onDeleteHandler(id) {
-    deleteNote(id);
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+  };
 
-    this.setState(() => {
-      return {
-        notes: getArchivedNotes()
-      }
-    })
-  }
+  const onUnArchiveHandler = async (id) => {
+    await unarchiveNote(id);
 
-  onUnArchiveHandler(id) {
-    unarchiveNote(id);
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+  };
 
-    this.setState(() => {
-      return {
-        notes: getArchivedNotes()
-      }
-    })
-  }
+  const onKeywordChangeHandler = (newKeyword) => {
+    setKeyword(newKeyword);
+    setSearchParams({ keyword: newKeyword });
+  };
 
-  onKeywordChangeHandler(keyword) {
-    this.setState(() => {
-      return {
-        keyword,
-      }
-    });
+  const filteredNotes = notes.filter((note) =>
+    note.title.toLowerCase().includes(keyword.toLowerCase())
+  );
 
-    this.props.keywordChange(keyword);
-  }
+  return (
+    <>
+      <h2>{locale === 'id' ? 'Daftar Catatan Archive' : 'archive notes list'}</h2>
+      <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
+      {notes.length === 0 ? (
+        <EmptyMessage txtArsip={locale === 'id' ? 'Arsip Kosong' : 'no archive'} />
+      ) : (
+        <NotesList notes={filteredNotes} onDelete={onDeleteHandler} onArchive={onUnArchiveHandler} txtArchive={'UnArchive'} />
+      )}
+    </>
+  );
+};
 
-  render() {
-    const notes = this.state.notes.filter((note) => {
-      return note.title.toLowerCase().includes(
-        this.state.keyword.toLowerCase()
-      );
-    });
+ArchivePage.propTypes = {
+  defaultKeyword: PropTypes.string,
+  keywordChange: PropTypes.func,
+};
 
-
-    return (
-      <>
-        <h2>Daftar Catatan Archive</h2>
-        <SearchBar keyword={this.state.keyword} keywordChange={this.onKeywordChangeHandler} />
-        {
-          this.state.notes.length === 0 ? (<EmptyMessage txtArsip={"Arsip kosong"} />) :
-            (<NotesList notes={notes} onDelete={this.onDeleteHandler} onArchive={this.onUnArchiveHandler} txtArchive={'UnArchive'} />)
-        }
-      </>
-    )
-  }
-}
-
-export default ArchivePageWrapper
+export default ArchivePage;

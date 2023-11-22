@@ -14,11 +14,10 @@ function NoteDetail({ title, body, createdAt }) {
   );
 }
 
-// NoteDetail.propTypes = {
-//   title: PropTypes.string.isRequired,
-//   overview: PropTypes.string.isRequired,
-//   posterPath: PropTypes.string.isRequired,
-//   createdAt: PropTypes.string.isRequired
-// };
+NoteDetail.propTypes = {
+  title: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
+  createdAt: PropTypes.string.isRequired
+};
 
 export default NoteDetail;

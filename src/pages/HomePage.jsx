@@ -1,84 +1,84 @@
-import React from 'react'
-import { getActiveNotes, deleteNote, archiveNote } from '../utils/local-data'
-import NotesList from '../components/NotesList'
-import EmptyMessage from '../components/EmptyMessage'
-import SearchBar from '../components/SearchBar'
+import React, { useState, useEffect, useContext } from 'react';
+import { getActiveNotes, deleteNote, archiveNote } from '../utils/network-data';
+import NotesList from '../components/NotesList';
+import EmptyMessage from '../components/EmptyMessage';
+import SearchBar from '../components/SearchBar';
 import { useSearchParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import LocaleContext from '../contexts/LocaleContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
-function HomePageWrapper() {
+const HomePage = () => {
+  const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState([]);
+  const [keyword, setKeyword] = useState('');
+  const { locale } = useContext(LocaleContext)
+
   const [searchParams, setSearchParams] = useSearchParams();
-  const keyword = searchParams.get('keyword');
-  function changeSearchParams(keyword) {
-    setSearchParams({ keyword });
-  }
+  const urlKeyword = searchParams.get('keyword');
 
-  // defaultKeyWord ini berasal dari keyword: props.defaultKeyWord
-  return <HomePage defaultKeyword={keyword} keywordChange={changeSearchParams} />
-}
-
-class HomePage extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      notes: getActiveNotes(),
-      keyword: props.defaultKeyword || '',
-    }
-
-    this.onDeleteHandler = this.onDeleteHandler.bind(this);
-    this.onArchiveHandler = this.onArchiveHandler.bind(this);
-    this.onKeywordChangeHandler = this.onKeywordChangeHandler.bind(this);
-  }
-
-  onDeleteHandler(id) {
-    deleteNote(id);
-
-    this.setState(() => {
-      return {
-        notes: getActiveNotes()
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await getActiveNotes();
+        setNotes(data);
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 3000);
       }
-    })
-  }
+    };
 
-  onArchiveHandler(id) {
-    archiveNote(id);
+    fetchData();
+  }, []);
 
-    this.setState(() => {
-      return {
-        notes: getActiveNotes()
-      }
-    })
-  }
+  useEffect(() => {
+    setKeyword(urlKeyword || '');
+  }, [urlKeyword]);
 
-  onKeywordChangeHandler(keyword) {
-    this.setState(() => {
-      return {
-        keyword,
-      }
-    });
+  const onDeleteHandler = async (id) => {
+    await deleteNote(id);
 
-    this.props.keywordChange(keyword);
-  }
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+  };
+
+  const onArchiveHandler = async (id) => {
+    await archiveNote(id);
+
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+  };
+
+  const onKeywordChangeHandler = (newKeyword) => {
+    setKeyword(newKeyword);
+    setSearchParams({ keyword: newKeyword });
+  };
+
+  const filteredNotes = notes.filter((note) =>
+    note.title.toLowerCase().includes(keyword.toLowerCase())
+  );
 
 
-  render() {
-    const notes = this.state.notes.filter((note) => {
-      return note.title.toLowerCase().includes(
-        this.state.keyword.toLowerCase()
-      );
-    });
+  return (
+    <>
+      {!loading ? (
+        <>
+          <h2>{locale === 'id' ? 'Daftar Catatan Aktif' : 'List of active notes'}</h2>
+          <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
+          {notes.length === 0 ? (
+            <EmptyMessage txtArsip={locale === 'id' ? 'Tidak Ada Catatan' : 'no note'} />
+          ) : (
+            <NotesList notes={filteredNotes} onDelete={onDeleteHandler} onArchive={onArchiveHandler} txtArchive={'Archive'} />
+          )}
+        </>
+      ) : (<LoadingSpinner />)}
 
-    return (
-      <>
-        <h2>Daftar Catatan Aktif</h2>
-        <SearchBar keyword={this.state.keyword} keywordChange={this.onKeywordChangeHandler} />
-        {
-          this.state.notes.length === 0 ? (<EmptyMessage txtArsip={'Tidak Ada Catatan'} />) :
-            (<NotesList notes={notes} onDelete={this.onDeleteHandler} onArchive={this.onArchiveHandler} txtArchive={'Archive'} />)
-        }
-      </>
-    )
-  }
-}
+    </>
+  );
+};
 
-export default HomePageWrapper
+HomePage.propTypes = {
+  defaultKeyword: PropTypes.string,
+  keywordChange: PropTypes.func,
+};
+
+export default HomePage;
